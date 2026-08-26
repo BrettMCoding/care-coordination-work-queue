@@ -6,6 +6,8 @@ This is the Expo frontend for Care Coordination Work Queue. It is a frontend-onl
 
 ```bash
 npm run web
+npm run build:web
+npm run serve:web
 npm run lint
 npm run typecheck
 ```
@@ -18,6 +20,7 @@ npm run typecheck
 - Synthetic care-team work queue data.
 - Filters for follow-up status and care-team role.
 - Manual loading, empty, and error states.
+- Static web export to `dist`.
 
 ## Not Implemented Yet
 

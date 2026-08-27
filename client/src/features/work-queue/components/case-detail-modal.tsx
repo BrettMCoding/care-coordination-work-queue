@@ -12,7 +12,10 @@ type CaseDetailModalProps = {
 };
 
 export function CaseDetailModal({ onClose, onRetry, state }: CaseDetailModalProps) {
-  const visible = state.kind !== 'closed';
+  if (state.kind === 'closed') {
+    return null;
+  }
+
   const modalLabel =
     state.kind === 'ready' ? `Case details for ${state.caseItem.clientAlias}` : 'Case details';
 
@@ -21,7 +24,7 @@ export function CaseDetailModal({ onClose, onRetry, state }: CaseDetailModalProp
       animationType="fade"
       onRequestClose={onClose}
       transparent
-      visible={visible}>
+      visible>
       <View style={styles.overlay}>
         <View
           accessibilityLabel={modalLabel}
@@ -161,6 +164,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     maxHeight: '92%',
     maxWidth: 720,
+    minWidth: 0,
     width: '100%',
   },
   content: {

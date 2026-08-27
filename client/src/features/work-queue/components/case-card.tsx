@@ -96,17 +96,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     gap: 18,
+    minWidth: 0,
     padding: 18,
+    width: '100%',
   },
   cardHeader: {
     alignItems: 'flex-start',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 16,
     justifyContent: 'space-between',
+    minWidth: 0,
   },
   titleBlock: {
     flex: 1,
     gap: 4,
+    minWidth: 0,
   },
   alias: {
     color: '#172026',
@@ -122,7 +127,8 @@ const styles = StyleSheet.create({
   badgeColumn: {
     alignItems: 'flex-end',
     gap: 6,
-    minWidth: 110,
+    flexShrink: 1,
+    minWidth: 0,
   },
   badge: {
     borderRadius: 999,
@@ -202,6 +208,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     gap: 2,
+    maxWidth: '100%',
+    minWidth: 0,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },

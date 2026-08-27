@@ -24,6 +24,8 @@ export function AccessibleActionButton({
       onBlur={() => setIsFocused(false)}
       onFocus={() => setIsFocused(true)}
       onPress={onPress}
+      onResponderTerminationRequest={() => true}
+      pressRetentionOffset={8}
       style={({ pressed }) => [
         styles.button,
         isPrimary ? styles.primaryButton : styles.secondaryButton,

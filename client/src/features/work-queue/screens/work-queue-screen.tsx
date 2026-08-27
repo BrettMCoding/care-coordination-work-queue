@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {
-  FlatList,
   Platform,
   ScrollView,
   StyleSheet,
@@ -8,7 +7,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { CaseCard } from '@/features/work-queue/components/case-card';
 import { CaseDetailModal } from '@/features/work-queue/components/case-detail-modal';
@@ -45,6 +44,10 @@ export function WorkQueueScreen() {
   );
   const focusBeforeModalRef = useRef<FocusableElement | null>(null);
   const isWide = width >= 900;
+  const safeAreaEdges = useMemo<Edge[]>(
+    () => (Platform.OS === 'web' ? ['top', 'left', 'right'] : ['top', 'right', 'bottom', 'left']),
+    [],
+  );
 
   const loadCases = useCallback(async () => {
     try {
@@ -187,11 +190,11 @@ export function WorkQueueScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={safeAreaEdges} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent} style={styles.screen}>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.headerCopy}>
+          <View style={[styles.header, isWide && styles.headerWide]}>
+            <View style={[styles.headerCopy, isWide && styles.headerCopyWide]}>
               <Text style={styles.eyebrow}>Synthetic care-team prototype</Text>
               <Text style={styles.title}>Care Team Work Queue</Text>
               <Text style={styles.subtitle}>
@@ -201,7 +204,7 @@ export function WorkQueueScreen() {
                 role.
               </Text>
             </View>
-            <View style={styles.headerPanel}>
+            <View style={[styles.headerPanel, isWide && styles.headerPanelWide]}>
               <Text style={styles.panelLabel}>Today</Text>
               <Text style={styles.panelDate}>Aug 26, 2026</Text>
               <Text style={styles.panelNote}>{queueSourceLabel}</Text>
@@ -295,13 +298,11 @@ function QueueContent({
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.caseList}
-      data={visibleCases}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <CaseCard item={item} onViewDetails={onViewDetails} />}
-      scrollEnabled={false}
-    />
+    <View style={styles.caseList}>
+      {visibleCases.map((item) => (
+        <CaseCard key={item.id} item={item} onViewDetails={onViewDetails} />
+      ))}
+    </View>
   );
 }
 
@@ -348,26 +349,37 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',
-    paddingBottom: 40,
-    paddingHorizontal: 18,
+    paddingBottom: 18,
+    paddingHorizontal: 14,
     paddingTop: Platform.select({ web: 28, default: 16 }),
   },
   container: {
     gap: 22,
     maxWidth: 1180,
+    minWidth: 0,
     width: '100%',
   },
   header: {
     alignItems: 'stretch',
+    gap: 16,
+    minWidth: 0,
+    width: '100%',
+  },
+  headerWide: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
     justifyContent: 'space-between',
   },
   headerCopy: {
+    gap: 8,
+    minWidth: 0,
+    width: '100%',
+  },
+  headerCopyWide: {
     flexBasis: 560,
     flexGrow: 1,
-    gap: 8,
+    flexShrink: 1,
+    width: 'auto',
   },
   eyebrow: {
     color: '#6f5542',
@@ -379,25 +391,34 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#172026',
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: '800',
     letterSpacing: 0,
-    lineHeight: 42,
+    lineHeight: 40,
   },
   subtitle: {
     color: '#4e5a54',
+    flexShrink: 1,
     fontSize: 16,
     lineHeight: 24,
     maxWidth: 760,
+    minWidth: 0,
+    width: '100%',
   },
   headerPanel: {
     backgroundColor: '#fffdf8',
     borderColor: '#ded6c8',
     borderRadius: 8,
     borderWidth: 1,
-    flexBasis: 260,
     gap: 4,
+    minWidth: 0,
     padding: 16,
+    width: '100%',
+  },
+  headerPanelWide: {
+    flexBasis: 260,
+    flexShrink: 1,
+    width: 'auto',
   },
   panelLabel: {
     color: '#6b665f',
@@ -419,6 +440,8 @@ const styles = StyleSheet.create({
   },
   workspace: {
     gap: 16,
+    minWidth: 0,
+    width: '100%',
   },
   workspaceWide: {
     alignItems: 'flex-start',

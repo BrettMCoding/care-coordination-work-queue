@@ -195,8 +195,10 @@ export function WorkQueueScreen() {
               <Text style={styles.eyebrow}>Synthetic care-team prototype</Text>
               <Text style={styles.title}>Care Team Work Queue</Text>
               <Text style={styles.subtitle}>
-                Review fictional follow-up work by status, urgency, and assigned role. This
-                prototype does not use real client information or make clinical recommendations.
+                Hi, Brett here. Consider this application my working introduction. I
+                rapid-prototyped it using a practical full-stack care-coordination workflow. Below,
+                you can explore entirely fictional follow-up work by status, urgency, and assigned
+                role.
               </Text>
             </View>
             <View style={styles.headerPanel}>

@@ -30,6 +30,7 @@ build/
 out/
 .next/
 .turbo/
+*.zip
 
 # Coverage and test output
 coverage/

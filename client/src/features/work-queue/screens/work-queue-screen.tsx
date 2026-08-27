@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   Platform,
@@ -15,32 +15,102 @@ import { FilterBar } from '@/features/work-queue/components/filter-bar';
 import { QueueStatePanel } from '@/features/work-queue/components/queue-state-panel';
 import { StateControls } from '@/features/work-queue/components/state-controls';
 import { SummaryStrip } from '@/features/work-queue/components/summary-strip';
-import { syntheticCases } from '@/features/work-queue/data/synthetic-cases';
+import { fetchWorkQueueCases } from '@/features/work-queue/services/work-queue-api';
 import type {
-  CareTeamRole,
-  FollowUpStatus,
-  QueueDemoState,
-  WorkQueueCase,
-} from '@/features/work-queue/types';
-
-type StatusFilter = FollowUpStatus | 'all';
-type RoleFilter = CareTeamRole | 'all';
+  RoleFilter,
+  StatusFilter,
+} from '@/features/work-queue/services/work-queue-query';
+import type { QueueDemoState, WorkQueueCase } from '@/features/work-queue/types';
 
 export function WorkQueueScreen() {
   const { width } = useWindowDimensions();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [demoState, setDemoState] = useState<QueueDemoState>('ready');
+  const [cases, setCases] = useState<WorkQueueCase[]>([]);
+  const [dataState, setDataState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const isWide = width >= 900;
 
-  const filteredCases = useMemo(
-    () => filterCases(syntheticCases, statusFilter, roleFilter),
-    [roleFilter, statusFilter],
+  const loadCases = useCallback(async () => {
+    try {
+      const nextCases = await fetchWorkQueueCases({
+        role: roleFilter,
+        sortBy: 'nextFollowUpDate',
+        sortDirection: 'asc',
+        status: statusFilter,
+      });
+
+      setCases(nextCases);
+      setDataState('ready');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to load work queue.');
+      setDataState('error');
+    }
+  }, [roleFilter, statusFilter]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      void loadCases();
+    }, 0);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [loadCases, reloadKey]);
+
+  const visibleCases = useMemo(
+    () => (demoState === 'empty' ? [] : cases),
+    [cases, demoState],
   );
 
-  const visibleCases = demoState === 'empty' ? [] : filteredCases;
+  const renderedState = demoState === 'ready' ? dataState : demoState;
+  const displayedErrorMessage =
+    demoState === 'error'
+      ? 'The prototype could not load the queue. In an API-backed version, this includes retry and logging behavior.'
+      : errorMessage;
+
   const overdueCount = visibleCases.filter((item) => item.status === 'overdue').length;
   const urgentCount = visibleCases.filter((item) => item.urgency === 'urgent').length;
+
+  const returnToQueue = useCallback(() => {
+    setDemoState('ready');
+    setDataState('loading');
+    setErrorMessage(null);
+    setReloadKey((current) => current + 1);
+  }, []);
+
+  const handleRoleChange = useCallback((value: RoleFilter) => {
+    setDataState('loading');
+    setErrorMessage(null);
+    setRoleFilter(value);
+  }, []);
+
+  const handleStatusChange = useCallback((value: StatusFilter) => {
+    setDataState('loading');
+    setErrorMessage(null);
+    setStatusFilter(value);
+  }, []);
+
+  const renderQueue = useCallback(
+    () =>
+      renderQueueContent({
+        errorMessage: displayedErrorMessage,
+        onRetry: returnToQueue,
+        state: renderedState,
+        visibleCases,
+      }),
+    [displayedErrorMessage, renderedState, returnToQueue, visibleCases],
+  );
+
+  const queueSourceLabel = useMemo(
+    () =>
+      process.env.EXPO_PUBLIC_USE_MOCK_DATA === 'true'
+        ? 'Explicit mock mode is enabled.'
+        : 'Queue data loads from the configured API.',
+    [],
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -58,7 +128,7 @@ export function WorkQueueScreen() {
             <View style={styles.headerPanel}>
               <Text style={styles.panelLabel}>Today</Text>
               <Text style={styles.panelDate}>Aug 26, 2026</Text>
-              <Text style={styles.panelNote}>Demo data is synthetic and manually seeded.</Text>
+              <Text style={styles.panelNote}>{queueSourceLabel}</Text>
             </View>
           </View>
 
@@ -67,8 +137,8 @@ export function WorkQueueScreen() {
               <FilterBar
                 roleFilter={roleFilter}
                 statusFilter={statusFilter}
-                onRoleChange={setRoleFilter}
-                onStatusChange={setStatusFilter}
+                onRoleChange={handleRoleChange}
+                onStatusChange={handleStatusChange}
               />
               <StateControls selectedState={demoState} onStateChange={setDemoState} />
             </View>
@@ -79,7 +149,7 @@ export function WorkQueueScreen() {
                 urgentCount={urgentCount}
                 visibleCount={visibleCases.length}
               />
-              {renderQueueContent(demoState, visibleCases, () => setDemoState('ready'))}
+              {renderQueue()}
             </View>
           </View>
         </View>
@@ -88,26 +158,20 @@ export function WorkQueueScreen() {
   );
 }
 
-function filterCases(
-  cases: WorkQueueCase[],
-  statusFilter: StatusFilter,
-  roleFilter: RoleFilter,
-) {
-  return cases.filter((item) => {
-    const statusMatches = statusFilter === 'all' || item.status === statusFilter;
-    const roleMatches =
-      roleFilter === 'all' || item.assignedTeam.some((member) => member.role === roleFilter);
+type RenderQueueContentOptions = {
+  errorMessage: string | null;
+  onRetry: () => void;
+  state: QueueDemoState | 'ready';
+  visibleCases: WorkQueueCase[];
+};
 
-    return statusMatches && roleMatches;
-  });
-}
-
-function renderQueueContent(
-  demoState: QueueDemoState,
-  visibleCases: WorkQueueCase[],
-  resetState: () => void,
-) {
-  if (demoState === 'loading') {
+function renderQueueContent({
+  errorMessage,
+  onRetry,
+  state,
+  visibleCases,
+}: RenderQueueContentOptions) {
+  if (state === 'loading') {
     return (
       <QueueStatePanel
         message="The queue is waiting on synthetic follow-up records. This state is manually demonstrable for UI review."
@@ -117,14 +181,14 @@ function renderQueueContent(
     );
   }
 
-  if (demoState === 'error') {
+  if (state === 'error') {
     return (
       <QueueStatePanel
-        actionLabel="Return to demo data"
-        message="The prototype could not load the queue. In a later API-backed version, this would include retry and logging behavior."
+        actionLabel="Retry"
+        message={errorMessage ?? 'Unable to load the work queue.'}
         title="Queue unavailable"
         type="error"
-        onAction={resetState}
+        onAction={onRetry}
       />
     );
   }
@@ -132,11 +196,11 @@ function renderQueueContent(
   if (visibleCases.length === 0) {
     return (
       <QueueStatePanel
-        actionLabel="Show demo data"
-        message="No synthetic cases match the selected filters. Adjust the filters or return to the seeded demo queue."
+        actionLabel="Retry queue"
+        message="No synthetic cases match the selected filters. Adjust the filters or retry the configured queue data source."
         title="No follow-ups found"
         type="empty"
-        onAction={resetState}
+        onAction={onRetry}
       />
     );
   }

@@ -1,0 +1,76 @@
+import type { WorkQueueCase } from './work-queue-types';
+
+export const syntheticCases: WorkQueueCase[] = [
+  {
+    id: 'case-001',
+    clientAlias: 'River H.',
+    context: 'Needs follow-up after missed intake paperwork.',
+    assignedTeam: [
+      { name: 'Mina Patel', role: 'care-coordinator' },
+      { name: 'Jon Bell', role: 'team-lead' },
+    ],
+    lastContactDate: '2026-08-20',
+    nextFollowUpDate: '2026-08-24',
+    status: 'overdue',
+    urgency: 'urgent',
+  },
+  {
+    id: 'case-002',
+    clientAlias: 'Sage M.',
+    context: 'Check whether transportation support details were received.',
+    assignedTeam: [
+      { name: 'Theo Nguyen', role: 'care-coordinator' },
+      { name: 'Alex Kim', role: 'peer-support' },
+    ],
+    lastContactDate: '2026-08-22',
+    nextFollowUpDate: '2026-08-26',
+    status: 'due-soon',
+    urgency: 'elevated',
+  },
+  {
+    id: 'case-003',
+    clientAlias: 'Rowan C.',
+    context: 'Scheduled routine check-in after resource referral.',
+    assignedTeam: [{ name: 'Ari Morgan', role: 'clinician' }],
+    lastContactDate: '2026-08-21',
+    nextFollowUpDate: '2026-08-29',
+    status: 'scheduled',
+    urgency: 'routine',
+  },
+  {
+    id: 'case-004',
+    clientAlias: 'Ellis T.',
+    context: 'Waiting for fictional consent form confirmation.',
+    assignedTeam: [
+      { name: 'Mina Patel', role: 'care-coordinator' },
+      { name: 'Ari Morgan', role: 'clinician' },
+    ],
+    lastContactDate: '2026-08-19',
+    nextFollowUpDate: '2026-08-27',
+    status: 'waiting',
+    urgency: 'elevated',
+  },
+  {
+    id: 'case-005',
+    clientAlias: 'Parker L.',
+    context: 'Team lead review requested for ownership handoff.',
+    assignedTeam: [
+      { name: 'Jon Bell', role: 'team-lead' },
+      { name: 'Theo Nguyen', role: 'care-coordinator' },
+    ],
+    lastContactDate: '2026-08-18',
+    nextFollowUpDate: '2026-08-23',
+    status: 'overdue',
+    urgency: 'elevated',
+  },
+  {
+    id: 'case-006',
+    clientAlias: 'Quinn A.',
+    context: 'Peer support follow-up scheduled after welcome call.',
+    assignedTeam: [{ name: 'Alex Kim', role: 'peer-support' }],
+    lastContactDate: '2026-08-25',
+    nextFollowUpDate: '2026-08-28',
+    status: 'scheduled',
+    urgency: 'routine',
+  },
+];

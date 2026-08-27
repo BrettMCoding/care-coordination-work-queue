@@ -1,18 +1,17 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { AccessibleActionButton } from '@/features/work-queue/components/accessible-action-button';
 import { roleLabels, statusLabels, urgencyLabels } from '@/features/work-queue/data/labels';
 import type { WorkQueueCase } from '@/features/work-queue/types';
 
 type CaseCardProps = {
   item: WorkQueueCase;
+  onViewDetails: (id: string) => void;
 };
 
-export function CaseCard({ item }: CaseCardProps) {
+export function CaseCard({ item, onViewDetails }: CaseCardProps) {
   return (
-    <Pressable
-      accessibilityLabel={`${item.clientAlias}, ${statusLabels[item.status]} follow-up`}
-      accessibilityRole="button"
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
+    <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.titleBlock}>
           <Text style={styles.alias}>{item.clientAlias}</Text>
@@ -37,7 +36,15 @@ export function CaseCard({ item }: CaseCardProps) {
           ))}
         </View>
       </View>
-    </Pressable>
+
+      <View style={styles.actionRow}>
+        <AccessibleActionButton
+          accessibilityLabel={`View details for ${item.clientAlias}.`}
+          label="View details"
+          onPress={() => onViewDetails(item.id)}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -90,9 +97,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 18,
     padding: 18,
-  },
-  cardPressed: {
-    opacity: 0.82,
   },
   cardHeader: {
     alignItems: 'flex-start',
@@ -211,5 +215,8 @@ const styles = StyleSheet.create({
     color: '#5f675f',
     fontSize: 12,
     lineHeight: 16,
+  },
+  actionRow: {
+    alignItems: 'flex-start',
   },
 });

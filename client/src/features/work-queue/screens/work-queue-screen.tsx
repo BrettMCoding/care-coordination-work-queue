@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {
   FlatList,
   Platform,
@@ -11,15 +11,23 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CaseCard } from '@/features/work-queue/components/case-card';
+import { CaseDetailModal } from '@/features/work-queue/components/case-detail-modal';
 import { FilterBar } from '@/features/work-queue/components/filter-bar';
 import { QueueStatePanel } from '@/features/work-queue/components/queue-state-panel';
 import { StateControls } from '@/features/work-queue/components/state-controls';
 import { SummaryStrip } from '@/features/work-queue/components/summary-strip';
-import { fetchWorkQueueCases } from '@/features/work-queue/services/work-queue-api';
+import {
+  fetchWorkQueueCase,
+  fetchWorkQueueCases,
+} from '@/features/work-queue/services/work-queue-api';
 import type {
   RoleFilter,
   StatusFilter,
 } from '@/features/work-queue/services/work-queue-query';
+import {
+  caseDetailReducer,
+  initialCaseDetailState,
+} from '@/features/work-queue/state/case-detail-state';
 import type { QueueDemoState, WorkQueueCase } from '@/features/work-queue/types';
 
 export function WorkQueueScreen() {
@@ -31,6 +39,11 @@ export function WorkQueueScreen() {
   const [dataState, setDataState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [caseDetailState, dispatchCaseDetail] = useReducer(
+    caseDetailReducer,
+    initialCaseDetailState,
+  );
+  const focusBeforeModalRef = useRef<FocusableElement | null>(null);
   const isWide = width >= 900;
 
   const loadCases = useCallback(async () => {
@@ -59,6 +72,43 @@ export function WorkQueueScreen() {
       clearTimeout(timeout);
     };
   }, [loadCases, reloadKey]);
+
+  const detailCaseId =
+    caseDetailState.kind === 'loading' ? caseDetailState.caseId : null;
+  const detailRequestKey =
+    caseDetailState.kind === 'loading' ? caseDetailState.requestKey : null;
+
+  useEffect(() => {
+    if (!detailCaseId) {
+      return;
+    }
+
+    let isCurrentRequest = true;
+
+    const loadCaseDetail = async () => {
+      try {
+        const caseItem = await fetchWorkQueueCase(detailCaseId);
+
+        if (isCurrentRequest) {
+          dispatchCaseDetail({ caseId: detailCaseId, caseItem, type: 'loaded' });
+        }
+      } catch (error) {
+        if (isCurrentRequest) {
+          dispatchCaseDetail({
+            caseId: detailCaseId,
+            message: error instanceof Error ? error.message : 'Unable to load case details.',
+            type: 'failed',
+          });
+        }
+      }
+    };
+
+    void loadCaseDetail();
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [detailCaseId, detailRequestKey]);
 
   const visibleCases = useMemo(
     () => (demoState === 'empty' ? [] : cases),
@@ -93,16 +143,40 @@ export function WorkQueueScreen() {
     setStatusFilter(value);
   }, []);
 
-  const renderQueue = useCallback(
-    () =>
-      renderQueueContent({
-        errorMessage: displayedErrorMessage,
-        onRetry: returnToQueue,
-        state: renderedState,
-        visibleCases,
-      }),
-    [displayedErrorMessage, renderedState, returnToQueue, visibleCases],
-  );
+  const handleViewDetails = useCallback((id: string) => {
+    focusBeforeModalRef.current = getActiveFocusableElement();
+    dispatchCaseDetail({ caseId: id, type: 'open' });
+  }, []);
+
+  const handleCloseDetails = useCallback(() => {
+    dispatchCaseDetail({ type: 'close' });
+    restoreFocus(focusBeforeModalRef.current);
+    focusBeforeModalRef.current = null;
+  }, []);
+
+  const handleRetryDetails = useCallback(() => {
+    dispatchCaseDetail({ type: 'retry' });
+  }, []);
+
+  const isDetailModalVisible = caseDetailState.kind !== 'closed';
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !isDetailModalVisible || typeof document === 'undefined') {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseDetails();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleCloseDetails, isDetailModalVisible]);
 
   const queueSourceLabel = useMemo(
     () =>
@@ -149,28 +223,41 @@ export function WorkQueueScreen() {
                 urgentCount={urgentCount}
                 visibleCount={visibleCases.length}
               />
-              {renderQueue()}
+              <QueueContent
+                errorMessage={displayedErrorMessage}
+                state={renderedState}
+                visibleCases={visibleCases}
+                onRetry={returnToQueue}
+                onViewDetails={handleViewDetails}
+              />
             </View>
           </View>
         </View>
       </ScrollView>
+      <CaseDetailModal
+        state={caseDetailState}
+        onClose={handleCloseDetails}
+        onRetry={handleRetryDetails}
+      />
     </SafeAreaView>
   );
 }
 
-type RenderQueueContentOptions = {
+type QueueContentProps = {
   errorMessage: string | null;
   onRetry: () => void;
+  onViewDetails: (id: string) => void;
   state: QueueDemoState | 'ready';
   visibleCases: WorkQueueCase[];
 };
 
-function renderQueueContent({
+function QueueContent({
   errorMessage,
   onRetry,
+  onViewDetails,
   state,
   visibleCases,
-}: RenderQueueContentOptions) {
+}: QueueContentProps) {
   if (state === 'loading') {
     return (
       <QueueStatePanel
@@ -210,10 +297,42 @@ function renderQueueContent({
       contentContainerStyle={styles.caseList}
       data={visibleCases}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <CaseCard item={item} />}
+      renderItem={({ item }) => <CaseCard item={item} onViewDetails={onViewDetails} />}
       scrollEnabled={false}
     />
   );
+}
+
+type FocusableElement = {
+  focus: () => void;
+};
+
+function getActiveFocusableElement(): FocusableElement | null {
+  if (Platform.OS !== 'web' || typeof document === 'undefined') {
+    return null;
+  }
+
+  const activeElement = document.activeElement;
+
+  const focus = activeElement && 'focus' in activeElement ? activeElement.focus : null;
+
+  if (typeof focus === 'function') {
+    return {
+      focus: () => focus.call(activeElement),
+    };
+  }
+
+  return null;
+}
+
+function restoreFocus(element: FocusableElement | null) {
+  if (Platform.OS !== 'web' || !element) {
+    return;
+  }
+
+  window.setTimeout(() => {
+    element.focus();
+  }, 0);
 }
 
 const styles = StyleSheet.create({

@@ -11,6 +11,10 @@ type WorkQueueListResponse = {
   data: WorkQueueCase[];
 };
 
+type WorkQueueDetailResponse = {
+  data: WorkQueueCase;
+};
+
 export async function fetchWorkQueueCases(query: WorkQueueQuery, fetcher = fetch) {
   if (isMockModeEnabled()) {
     return filterAndSortMockCases(syntheticCases, query);
@@ -33,6 +37,41 @@ export async function fetchWorkQueueCases(query: WorkQueueQuery, fetcher = fetch
 
   if (!Array.isArray(body.data)) {
     throw new Error('Work queue response did not include a data array.');
+  }
+
+  return body.data;
+}
+
+export async function fetchWorkQueueCase(id: string, fetcher = fetch) {
+  if (isMockModeEnabled()) {
+    const foundCase = syntheticCases.find((item) => item.id === id);
+
+    if (!foundCase) {
+      throw new Error(`Work queue case ${id} was not found.`);
+    }
+
+    return foundCase;
+  }
+
+  const apiUrl = getApiUrl();
+  const response = await fetcher(`${apiUrl}/api/cases/${encodeURIComponent(id)}`, {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Work queue case ${id} was not found.`);
+    }
+
+    throw new Error(`Work queue case request failed with status ${response.status}`);
+  }
+
+  const body = (await response.json()) as WorkQueueDetailResponse;
+
+  if (!body.data || typeof body.data.id !== 'string') {
+    throw new Error('Work queue case response did not include a case object.');
   }
 
   return body.data;

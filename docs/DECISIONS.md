@@ -37,7 +37,7 @@ This log records settled decisions and unresolved architecture questions. Keep e
 ### 2026-08-26: MongoDB-backed API and client integration
 
 - Used the official MongoDB Node.js driver for persistence and kept the connection as a reusable process-level client.
-- Added `GET /readyz` for MongoDB connectivity while keeping `GET /healthz` independent of the database.
+- Added `GET /ready` for MongoDB connectivity while keeping `GET /health` independent of the database.
 - Modeled the backend API around the existing client queue fields: client alias, team roles, last contact, next follow-up, status, and urgency.
 - Added `GET /api/cases` with status, role, urgency, search, and sort query parameters. The current client uses status and role filters.
 - Added `GET /api/cases/:id` for typed case detail retrieval even though the current UI has not added a detail route yet.

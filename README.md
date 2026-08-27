@@ -19,7 +19,7 @@ Planned deployment root: `https://carequeue.brettmarshmakesthings.com`
 - Manually demonstrable loading, empty, and error states
 - Static web export configuration
 - Initial Express API foundation in `server/`
-- `GET /healthz` health endpoint
+- `GET /health` health endpoint
 - Request IDs, structured logging, JSON error responses, and graceful shutdown handling
 
 ## Current Architecture

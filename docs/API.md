@@ -24,7 +24,7 @@ All handled errors use this shape:
 
 `details` is optional. Production responses do not expose stack traces.
 
-## `GET /healthz`
+## `GET /health`
 
 Lightweight process health check. Does not touch MongoDB.
 
@@ -38,7 +38,7 @@ Response:
 }
 ```
 
-## `GET /readyz`
+## `GET /ready`
 
 Readiness check. Verifies MongoDB connectivity.
 

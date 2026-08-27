@@ -21,7 +21,7 @@ describe('server app', () => {
   };
 
   it('returns health status with a request id', async () => {
-    const response = await request(createApp()).get('/healthz').expect(200);
+    const response = await request(createApp()).get('/health').expect(200);
 
     expect(response.headers['x-request-id']).toBeTruthy();
     expect(response.body).toMatchObject({
@@ -33,7 +33,7 @@ describe('server app', () => {
 
   it('preserves an incoming request id', async () => {
     const response = await request(createApp())
-      .get('/healthz')
+      .get('/health')
       .set('x-request-id', 'demo-request-id')
       .expect(200);
 
@@ -44,7 +44,7 @@ describe('server app', () => {
     const response = await request(
       createApp({ readinessCheck: async () => undefined }),
     )
-      .get('/readyz')
+      .get('/ready')
       .expect(200);
 
     expect(response.body).toMatchObject({
@@ -61,14 +61,14 @@ describe('server app', () => {
         },
       }),
     )
-      .get('/readyz')
-      .set('x-request-id', 'readyz-test')
+      .get('/ready')
+      .set('x-request-id', 'ready-test')
       .expect(503);
 
     expect(response.body.error).toMatchObject({
       code: 'DATABASE_NOT_READY',
       message: 'Database connectivity check failed.',
-      requestId: 'readyz-test',
+      requestId: 'ready-test',
     });
   });
 

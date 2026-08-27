@@ -8,7 +8,7 @@ export type ReadinessCheck = () => Promise<void>;
 export function createReadinessRouter(readinessCheck: ReadinessCheck = pingDatabase) {
   const router = Router();
 
-  router.get('/readyz', async (_req, res, next) => {
+  router.get('/ready', async (_req, res, next) => {
     try {
       await readinessCheck();
       res.status(200).json({

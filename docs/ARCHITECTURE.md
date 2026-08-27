@@ -43,8 +43,8 @@ The backend does not store real patient information, credentials, authentication
 
 ## Reliability Boundaries
 
-- `/healthz` checks only whether the server process can respond.
-- `/readyz` checks MongoDB connectivity.
+- `/health` checks only whether the server process can respond.
+- `/ready` checks MongoDB connectivity.
 - MongoDB connections are reused across requests.
 - The server listens on `0.0.0.0` and respects Cloud Run's `PORT`.
 - Shutdown handlers close the HTTP server and MongoDB connection on `SIGTERM` and `SIGINT`.

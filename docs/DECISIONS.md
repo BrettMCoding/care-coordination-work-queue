@@ -68,42 +68,36 @@ This log records settled decisions and unresolved architecture questions. Keep e
 - Preserved the existing status and urgency mix so the queue still demonstrates overdue, due-soon, scheduled, waiting, urgent, elevated, and routine states over time.
 - Applied rolling dates in both client mock mode and server response mapping so the deployed API does not require daily reseeding just to keep dates coherent.
 
+### 2026-08-28: Deployed hybrid hosting
+
+- Deployed the static Expo web client separately from the API so the frontend can be served from the dedicated Namecheap subdomain root.
+- Deployed the backend as the Google Cloud Run service `carequeue-api` in `us-central1`.
+- Kept MongoDB Atlas as the persistence layer and supplied the MongoDB URI to Cloud Run through Google Secret Manager.
+- Kept `EXPO_PUBLIC_API_URL` as a build-time public client setting and `EXPO_PUBLIC_USE_MOCK_DATA=true` as the only supported local mock-data path.
+
 ## Unresolved Questions
 
-### Frontend Structure
+### Frontend And Shared Types
 
-- How should feature folders evolve once the app adds record detail, outreach attempt forms, and shared domain types?
-- Should a future backend introduce a formal monorepo workspace, or should frontend and backend remain separate package roots?
+- How should feature folders evolve once the app adds outreach attempt forms, activity history, and authenticated user-specific views?
+- Should a future backend introduce a formal monorepo workspace or shared package for API DTOs, or should frontend and backend remain separate package roots?
 - Should Expo typed routes remain enabled once more routes are added?
-
-### Backend Framework
-
-- How much route-level structure is needed once case and outreach APIs are added?
-- Should future API modules be organized by feature, by HTTP route, or by domain service boundary?
 
 ### MongoDB Modeling
 
 - Should records, interactions, outreach attempts, and assignments be separate collections or embedded documents for the MVP?
-- How should fictional seed data be loaded and reset during local development?
-- What indexes are needed for follow-up timing, status, urgency, and owner filters?
+- Should MongoDB Atlas use private networking or remain publicly reachable with tightly scoped allowlists for this portfolio deployment?
+- What long-term timezone policy should govern follow-up dates if write workflows are added?
 
-### API Validation
+### Authentication And Authorization
 
-- Which runtime validation library should be used for request and response boundaries?
-- Should validation schemas also drive shared TypeScript types?
-- How should validation errors be shaped for the frontend?
+- What prototype authentication approach is appropriate before adding write workflows?
+- How should role-based authorization be represented for care coordinators, clinicians, peer support, team leads, and administrators?
 
-### Testing
+### Write Workflows And Auditability
 
-- Which unit test runner should be used across frontend and backend?
-- What level of integration testing is necessary for MongoDB-backed API behavior?
-- Should UI tests use React Native Testing Library, Playwright for web, or both?
-
-### Observability
-
-- What structured logging library should the backend use?
-- What request identifiers or correlation fields are useful for local debugging and future deployment?
-- What health check and readiness endpoints are needed for Cloud Run?
+- How should outreach attempts, assignment changes, and status updates be modeled?
+- What audit trail is needed for write actions in a sensitive-domain workflow prototype?
 
 ### AI Integration
 
@@ -113,12 +107,12 @@ This log records settled decisions and unresolved architecture questions. Keep e
 
 ### Cloud Run Deployment
 
-- Should the frontend be deployed separately from the API, or should the API serve the web build?
-- How will environment variables and sensitive deployment configuration be managed?
-- What deployment path keeps costs low and the architecture easy to explain?
+- Should future deployments use infrastructure as code instead of manual `gcloud` commands?
+- Should CI/CD own Cloud Run deployments, static web exports, and cPanel upload packaging?
+- What managed monitoring and alerting should be added for public uptime?
 
-### Static Web Hosting
+### Browser And Device Testing
 
-- Which static hosting provider will serve `client/dist` at `https://carequeue.brettmarshmakesthings.com`?
-- What cache headers should be applied to `index.html` versus hashed Expo assets?
-- Should a deployment ZIP naming convention be documented once a hosting provider is selected?
+- Should end-to-end browser tests run in CI against the exported Expo web build?
+- What physical Android and iOS checks should be repeated before presenting the project publicly?
+- What cache headers should be applied to `index.html` versus hashed Expo assets on the static host?

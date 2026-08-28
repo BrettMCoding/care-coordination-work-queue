@@ -1,6 +1,6 @@
 # Architecture
 
-Care Coordination Work Queue is a synthetic-data portfolio prototype. It is not a production clinical system, does not process real patient information, and does not provide diagnoses, treatment recommendations, risk scoring, or medical advice.
+Care Coordination Work Queue is a fictional-data portfolio prototype. It is not a production clinical system, does not process real patient information, and does not provide diagnoses, treatment recommendations, risk scoring, or medical advice.
 
 ## Runtime Shape
 
@@ -28,12 +28,12 @@ Care Coordination Work Queue is a synthetic-data portfolio prototype. It is not 
 
 ## Data Flow
 
-The seed command writes only synthetic fictional cases. Each case stores:
+The seed command writes only fictional cases. Each case stores:
 
 - Stable case ID.
 - Fictional client alias.
 - Fictional context note.
-- Assigned synthetic team members and roles.
+- Assigned fictional team members and roles.
 - Last contact date.
 - Next follow-up date.
 - Follow-up status.

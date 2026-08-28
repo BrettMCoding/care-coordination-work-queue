@@ -2,7 +2,7 @@
 
 ## Overview
 
-Care Coordination Work Queue is an independent fictional prototype for organizing follow-up work across a multidisciplinary care team. It uses synthetic data only and is intended as a small portfolio project focused on workflow clarity, reliable full-stack implementation, and responsible handling of sensitive-domain concepts.
+Care Coordination Work Queue is an independent fictional prototype for organizing follow-up work across a multidisciplinary care team. It uses fictional data only and is intended as a small portfolio project focused on workflow clarity, reliable full-stack implementation, and responsible handling of sensitive-domain concepts.
 
 ## Fictional Users
 
@@ -20,7 +20,7 @@ This prototype models that coordination problem without using real patient data 
 ## Initial Workflow
 
 1. A fictional staff user opens the work queue.
-2. The queue displays synthetic records that need follow-up.
+2. The queue displays fictional records that need follow-up.
 3. The user filters by status, urgency, role, owner, and follow-up timing.
 4. The user opens a record to review recent fictional interaction history.
 5. The user records a fictional outreach attempt or updates ownership/status.
@@ -31,9 +31,9 @@ This prototype models that coordination problem without using real patient data 
 - Strict TypeScript codebase.
 - React Native and React Native Web frontend.
 - Node.js API.
-- MongoDB persistence using synthetic seed data.
+- MongoDB persistence using fictional seed data.
 - Work queue list with filters for follow-up status, urgency, role, and timing.
-- Record detail view with synthetic profile information and recent fictional interactions.
+- Record detail view with fictional profile information and recent fictional interactions.
 - Outreach attempt form with validation.
 - Clear empty, loading, and error states.
 - Basic automated tests for core filtering, validation, and API behavior.
@@ -53,10 +53,10 @@ This prototype models that coordination problem without using real patient data 
 
 ## Safety And Privacy Boundaries
 
-- All demo records must be synthetic and fictional.
+- All demo records must be fictional.
 - UI copy must clearly avoid asking for real patient information.
 - Any future AI-generated summaries must be labeled as drafts requiring human verification.
-- AI output must summarize only synthetic notes provided inside the prototype.
+- AI output must summarize only fictional notes provided inside the prototype.
 - The application must not present AI output as medical advice, risk assessment, diagnosis, or treatment guidance.
 - Logs, fixtures, screenshots, and documentation must not contain real patient information.
 
@@ -83,7 +83,7 @@ This prototype models that coordination problem without using real patient data 
 
 ### Day 2
 
-- Implement synthetic domain model and seed data.
+- Implement fictional domain model and seed data.
 - Build the initial work queue, filters, and record detail view.
 - Add API endpoints for reading queue items and recording outreach attempts.
 - Add focused tests for filtering, validation, and basic API behavior.
@@ -92,5 +92,5 @@ This prototype models that coordination problem without using real patient data 
 
 - Add polish for loading, empty, and error states.
 - Add basic observability, health checks, and deployment notes.
-- Review safety language and synthetic data boundaries.
+- Review safety language and fictional data boundaries.
 - Prepare a concise project explanation of architecture, tradeoffs, tests, and next steps.

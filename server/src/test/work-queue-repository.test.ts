@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildCaseMongoQuery, WorkQueueRepository } from '../features/work-queue/work-queue-repository';
+import { applyRollingCaseDates } from '../features/work-queue/work-queue-rolling-dates';
 import type { WorkQueueCaseDocument } from '../features/work-queue/work-queue-types';
 
 const document: WorkQueueCaseDocument = {
@@ -75,23 +76,23 @@ describe('WorkQueueRepository', () => {
       findOne: async () => document,
     });
 
+    const expectedCase = applyRollingCaseDates({
+      id: 'case-001',
+      assignedTeam: document.assignedTeam,
+      clientAlias: 'River H.',
+      context: document.context,
+      lastContactDate: document.lastContactDate,
+      nextFollowUpDate: document.nextFollowUpDate,
+      status: 'overdue',
+      urgency: 'urgent',
+    });
+
     await expect(
       repository.listCases({
         sortBy: 'nextFollowUpDate',
         sortDirection: 'asc',
       }),
-    ).resolves.toEqual([
-      {
-        id: 'case-001',
-        assignedTeam: document.assignedTeam,
-        clientAlias: 'River H.',
-        context: document.context,
-        lastContactDate: document.lastContactDate,
-        nextFollowUpDate: document.nextFollowUpDate,
-        status: 'overdue',
-        urgency: 'urgent',
-      },
-    ]);
+    ).resolves.toEqual([expectedCase]);
 
     await expect(repository.findCaseById('case-001')).resolves.toMatchObject({
       id: 'case-001',

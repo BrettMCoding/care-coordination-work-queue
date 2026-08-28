@@ -1,6 +1,8 @@
 import type { WorkQueueCase } from './work-queue-types';
 
-export const syntheticCases: WorkQueueCase[] = [
+import { applyRollingCaseDates } from './work-queue-rolling-dates';
+
+const fictionalCaseTemplates: WorkQueueCase[] = [
   {
     id: 'case-001',
     clientAlias: 'River H.',
@@ -9,8 +11,8 @@ export const syntheticCases: WorkQueueCase[] = [
       { name: 'Mina Patel', role: 'care-coordinator' },
       { name: 'Jon Bell', role: 'team-lead' },
     ],
-    lastContactDate: '2026-08-20',
-    nextFollowUpDate: '2026-08-24',
+    lastContactDate: '',
+    nextFollowUpDate: '',
     status: 'overdue',
     urgency: 'urgent',
   },
@@ -22,8 +24,8 @@ export const syntheticCases: WorkQueueCase[] = [
       { name: 'Theo Nguyen', role: 'care-coordinator' },
       { name: 'Alex Kim', role: 'peer-support' },
     ],
-    lastContactDate: '2026-08-22',
-    nextFollowUpDate: '2026-08-26',
+    lastContactDate: '',
+    nextFollowUpDate: '',
     status: 'due-soon',
     urgency: 'elevated',
   },
@@ -32,21 +34,21 @@ export const syntheticCases: WorkQueueCase[] = [
     clientAlias: 'Rowan C.',
     context: 'Scheduled routine check-in after resource referral.',
     assignedTeam: [{ name: 'Ari Morgan', role: 'clinician' }],
-    lastContactDate: '2026-08-21',
-    nextFollowUpDate: '2026-08-29',
+    lastContactDate: '',
+    nextFollowUpDate: '',
     status: 'scheduled',
     urgency: 'routine',
   },
   {
     id: 'case-004',
     clientAlias: 'Ellis T.',
-    context: 'Waiting for fictional consent form confirmation.',
+    context: 'Waiting for consent form confirmation.',
     assignedTeam: [
       { name: 'Mina Patel', role: 'care-coordinator' },
       { name: 'Ari Morgan', role: 'clinician' },
     ],
-    lastContactDate: '2026-08-19',
-    nextFollowUpDate: '2026-08-27',
+    lastContactDate: '',
+    nextFollowUpDate: '',
     status: 'waiting',
     urgency: 'elevated',
   },
@@ -58,8 +60,8 @@ export const syntheticCases: WorkQueueCase[] = [
       { name: 'Jon Bell', role: 'team-lead' },
       { name: 'Theo Nguyen', role: 'care-coordinator' },
     ],
-    lastContactDate: '2026-08-18',
-    nextFollowUpDate: '2026-08-23',
+    lastContactDate: '',
+    nextFollowUpDate: '',
     status: 'overdue',
     urgency: 'elevated',
   },
@@ -68,9 +70,13 @@ export const syntheticCases: WorkQueueCase[] = [
     clientAlias: 'Quinn A.',
     context: 'Peer support follow-up scheduled after welcome call.',
     assignedTeam: [{ name: 'Alex Kim', role: 'peer-support' }],
-    lastContactDate: '2026-08-25',
-    nextFollowUpDate: '2026-08-28',
+    lastContactDate: '',
+    nextFollowUpDate: '',
     status: 'scheduled',
     urgency: 'routine',
   },
 ];
+
+export const fictionalCases = fictionalCaseTemplates.map((caseItem) =>
+  applyRollingCaseDates(caseItem),
+);

@@ -2,7 +2,7 @@
 
 Care Coordination Work Queue is an independent fictional care-team workflow prototype. The current implementation includes a static Expo web client and an initial Express API foundation for future backend work.
 
-This project uses synthetic data only. It is not a clinical decision-making system and does not provide diagnoses, treatment recommendations, risk scoring, or medical advice.
+This project uses fictional data only. It is not a clinical decision-making system and does not provide diagnoses, treatment recommendations, risk scoring, or medical advice.
 
 ## Live Demo
 
@@ -14,7 +14,7 @@ Planned deployment root: `https://carequeue.brettmarshmakesthings.com`
 - Expo frontend in `client/`
 - React Native and React Native Web
 - Expo Router
-- Responsive synthetic care-team work queue screen
+- Responsive fictional care-team work queue screen
 - Status and care-team-role filters
 - Manually demonstrable loading, empty, and error states
 - Static web export configuration
@@ -57,11 +57,11 @@ copy .env.example .env
 npm run dev
 ```
 
-Seed synthetic data after configuring a MongoDB URI:
+Seed fictional data after configuring a MongoDB URI:
 
 ```bash
 cd server
-npm run seed:synthetic
+npm run seed:fictional
 ```
 
 ## Web Build
@@ -95,7 +95,3 @@ The generated `client/dist` directory is ignored by Git and is intended to be up
 - [Architecture](docs/ARCHITECTURE.md)
 - [API](docs/API.md)
 - [Deployment](docs/DEPLOYMENT.md)
-
-## Project Status
-
-The frontend and backend core stack are implemented. MongoDB Atlas and Google Cloud Run still require external account credentials and configuration before the deployed app can serve persistent data.

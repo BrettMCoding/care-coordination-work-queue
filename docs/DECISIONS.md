@@ -11,7 +11,7 @@ This log records settled decisions and unresolved architecture questions. Keep e
 - Used Expo Router because it is included in the default Expo template and supports React Native plus web routing from the same route tree.
 - Replaced the starter tab example with a single active work queue route for Day 1. Additional routes will be added only when record details or other workflows are implemented.
 - Added `npm run typecheck` in the client so strict TypeScript can be validated separately from linting.
-- Kept all Day 1 data local, typed, synthetic, and frontend-only. No backend, database, authentication, or external AI API was added.
+- Kept all Day 1 data local, typed, fictional, and frontend-only. No backend, database, authentication, or external AI API was added.
 
 ### 2026-08-26: Static web deployment preparation
 
@@ -42,11 +42,31 @@ This log records settled decisions and unresolved architecture questions. Keep e
 - Added `GET /api/cases` with status, role, urgency, search, and sort query parameters. The current client uses status and role filters.
 - Added `GET /api/cases/:id` for typed case detail retrieval even though the current UI has not added a detail route yet.
 - Used Zod for environment, query, route-parameter, and future request-body validation.
-- Added a safe repeatable synthetic seed command that upserts known fictional cases by stable IDs.
+- Added a safe repeatable fictional seed command that upserts known fictional cases by stable IDs.
 - Added MongoDB indexes for status/date, assigned role/date, urgency/date, and text search.
 - Added CORS allowlist configuration for localhost development origins and the production web origin.
 - Added a production Dockerfile for the server using a Node 24 image and a non-root runtime user.
 - Kept client mock data behind explicit `EXPO_PUBLIC_USE_MOCK_DATA=true`; the normal client path calls the configured API and does not silently fall back.
+
+### 2026-08-27: Client case detail interaction
+
+- Kept queue cards non-interactive so vertical mobile scrolling is not competing with a full-card press target.
+- Added an explicit `View details` action on each card and used the existing `GET /api/cases/:id` backend contract for modal detail loading.
+- Kept the detail view as a shared React Native `Modal` instead of a web-only route so browser, Android, and iOS behavior stays aligned.
+- Added a small reducer for case detail selection, retry, and close state so the interaction can be tested without adding a heavier UI testing dependency.
+
+### 2026-08-27: Mobile web scrolling ownership
+
+- Kept the outer work queue `ScrollView` as the single owner of page-level vertical scrolling.
+- Replaced the nested disabled `FlatList` with a normal mapped `View` because the prototype renders a small number of fictional cases and does not need list virtualization.
+- Made the header layout mobile-first and moved fixed row/flex-basis sizing behind the wide-screen breakpoint to prevent narrow viewport overflow.
+- Unmounted the case detail modal when closed so its backdrop cannot keep intercepting touches after dismissal.
+
+### 2026-08-28: Rolling demo follow-up dates
+
+- Changed the demo case dates from fixed calendar values to stable offsets from the current date.
+- Preserved the existing status and urgency mix so the queue still demonstrates overdue, due-soon, scheduled, waiting, urgent, elevated, and routine states over time.
+- Applied rolling dates in both client mock mode and server response mapping so the deployed API does not require daily reseeding just to keep dates coherent.
 
 ## Unresolved Questions
 
@@ -64,7 +84,7 @@ This log records settled decisions and unresolved architecture questions. Keep e
 ### MongoDB Modeling
 
 - Should records, interactions, outreach attempts, and assignments be separate collections or embedded documents for the MVP?
-- How should synthetic seed data be loaded and reset during local development?
+- How should fictional seed data be loaded and reset during local development?
 - What indexes are needed for follow-up timing, status, urgency, and owner filters?
 
 ### API Validation
@@ -89,7 +109,7 @@ This log records settled decisions and unresolved architecture questions. Keep e
 
 - Is an AI-generated draft summary in scope for the MVP, or should it remain a later milestone?
 - What human-verification UI language is required before any draft summary is displayed?
-- How should prompts and model outputs be tested using synthetic notes only?
+- How should prompts and model outputs be tested using fictional notes only?
 
 ### Cloud Run Deployment
 

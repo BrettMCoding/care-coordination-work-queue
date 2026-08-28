@@ -10,5 +10,5 @@
 - Record architectural decisions and open questions in `docs/DECISIONS.md`.
 - Explain unfamiliar TypeScript, React Native, Node.js, MongoDB, and cloud concepts concisely because this is also a learning project.
 - Never fabricate personal experience, application behavior, security guarantees, test results, measured outcomes, or project status.
-- Use synthetic fictional data only. Never request, store, or imply use of real patient information.
+- Use fictional data only. Never request, store, or imply use of real patient information.
 - Keep the project small enough to complete, test, maintain, and explain in a portfolio walkthrough.

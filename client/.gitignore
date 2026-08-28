@@ -9,6 +9,7 @@ dist/
 web-build/
 expo-env.d.ts
 *.zip
+*.tar.gz
 
 # Native
 .kotlin/

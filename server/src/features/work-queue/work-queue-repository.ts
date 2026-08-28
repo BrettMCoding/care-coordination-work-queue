@@ -49,7 +49,7 @@ export class WorkQueueRepository {
     return document ? mapCaseDocument(document) : null;
   }
 
-  async upsertSyntheticCases(cases: WorkQueueCase[]): Promise<BulkWriteResult> {
+  async upsertFictionalCases(cases: WorkQueueCase[]): Promise<BulkWriteResult> {
     const now = new Date();
 
     return this.collection.bulkWrite(

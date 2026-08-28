@@ -1,7 +1,8 @@
 import type { WorkQueueCase, WorkQueueCaseDocument } from './work-queue-types';
+import { applyRollingCaseDates } from './work-queue-rolling-dates';
 
 export function mapCaseDocument(document: WorkQueueCaseDocument): WorkQueueCase {
-  return {
+  return applyRollingCaseDates({
     id: document._id,
     assignedTeam: document.assignedTeam,
     clientAlias: document.clientAlias,
@@ -10,5 +11,5 @@ export function mapCaseDocument(document: WorkQueueCaseDocument): WorkQueueCase 
     nextFollowUpDate: document.nextFollowUpDate,
     status: document.status,
     urgency: document.urgency,
-  };
+  });
 }

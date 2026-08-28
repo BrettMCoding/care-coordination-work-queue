@@ -95,7 +95,7 @@ gcloud run deploy "${SERVICE}" \
   --project "${PROJECT_ID}"
 ```
 
-Seed synthetic data after deployment by running the seed command locally against the Atlas URI, or by creating a one-off Cloud Run job later. This repository does not include a Cloud Run job definition yet.
+Seed fictional data after deployment by running the seed command locally against the Atlas URI, or by creating a one-off Cloud Run job later. This repository does not include a Cloud Run job definition yet.
 
 ## Client: Static Expo Web
 
@@ -124,4 +124,4 @@ Upload the contents of `client/dist` to the hosting provider for the subdomain r
 - Deploy the Cloud Run service.
 - Configure the Namecheap subdomain DNS.
 - Configure cPanel or static hosting to serve the exported `client/dist` files.
-- Run the synthetic seed command against the intended database.
+- Run the fictional seed command against the intended database.

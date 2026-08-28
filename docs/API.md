@@ -1,6 +1,6 @@
 # API
 
-The API serves synthetic work queue data only. It is not a clinical decision-making system and must not receive real patient information.
+The API serves fictional work queue data only. It is not a clinical decision-making system and must not receive real patient information.
 
 Base URL examples:
 
@@ -122,7 +122,7 @@ Response:
 
 ## `GET /api/cases/:id`
 
-Returns one synthetic case by ID.
+Returns one fictional case by ID.
 
 Example:
 

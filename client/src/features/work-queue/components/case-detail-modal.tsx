@@ -49,7 +49,7 @@ function LoadingContent() {
     <View style={styles.centeredState}>
       <ActivityIndicator color="#375d6a" size="small" />
       <Text style={styles.title}>Loading case details</Text>
-      <Text style={styles.message}>Retrieving the selected synthetic queue record.</Text>
+      <Text style={styles.message}>Retrieving the selected queue record.</Text>
     </View>
   );
 }
@@ -92,7 +92,7 @@ function ReadyContent({ caseItem, onClose }: ReadyContentProps) {
     <View style={styles.detailStack}>
       <View style={styles.detailHeader}>
         <View style={styles.headerCopy}>
-          <Text style={styles.eyebrow}>Synthetic case detail</Text>
+          <Text style={styles.eyebrow}>Case detail</Text>
           <Text style={styles.title}>{caseItem.clientAlias}</Text>
           <Text style={styles.message}>{caseItem.context}</Text>
         </View>

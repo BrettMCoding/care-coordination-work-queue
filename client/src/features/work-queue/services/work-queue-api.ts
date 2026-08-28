@@ -1,4 +1,4 @@
-import { syntheticCases } from '@/features/work-queue/data/synthetic-cases';
+import { fictionalCases } from '@/features/work-queue/data/fictional-cases';
 import type { WorkQueueCase } from '@/features/work-queue/types';
 
 import {
@@ -17,7 +17,7 @@ type WorkQueueDetailResponse = {
 
 export async function fetchWorkQueueCases(query: WorkQueueQuery, fetcher = fetch) {
   if (isMockModeEnabled()) {
-    return filterAndSortMockCases(syntheticCases, query);
+    return filterAndSortMockCases(fictionalCases, query);
   }
 
   const apiUrl = getApiUrl();
@@ -44,7 +44,7 @@ export async function fetchWorkQueueCases(query: WorkQueueQuery, fetcher = fetch
 
 export async function fetchWorkQueueCase(id: string, fetcher = fetch) {
   if (isMockModeEnabled()) {
-    const foundCase = syntheticCases.find((item) => item.id === id);
+    const foundCase = fictionalCases.find((item) => item.id === id);
 
     if (!foundCase) {
       throw new Error(`Work queue case ${id} was not found.`);

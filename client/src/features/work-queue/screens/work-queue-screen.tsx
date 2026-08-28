@@ -37,6 +37,7 @@ export function WorkQueueScreen() {
   const [cases, setCases] = useState<WorkQueueCase[]>([]);
   const [dataState, setDataState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [currentDateLabel, setCurrentDateLabel] = useState(() => formatCurrentDate(new Date()));
   const [reloadKey, setReloadKey] = useState(0);
   const [caseDetailState, dispatchCaseDetail] = useReducer(
     caseDetailReducer,
@@ -75,6 +76,19 @@ export function WorkQueueScreen() {
       clearTimeout(timeout);
     };
   }, [loadCases, reloadKey]);
+
+  useEffect(() => {
+    const updateCurrentDate = () => {
+      setCurrentDateLabel(formatCurrentDate(new Date()));
+    };
+
+    updateCurrentDate();
+    const interval = setInterval(updateCurrentDate, 60_000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const detailCaseId =
     caseDetailState.kind === 'loading' ? caseDetailState.caseId : null;
@@ -195,18 +209,20 @@ export function WorkQueueScreen() {
         <View style={styles.container}>
           <View style={[styles.header, isWide && styles.headerWide]}>
             <View style={[styles.headerCopy, isWide && styles.headerCopyWide]}>
-              <Text style={styles.eyebrow}>Synthetic care-team prototype</Text>
+              <Text style={styles.eyebrow}>Care-team prototype</Text>
               <Text style={styles.title}>Care Team Work Queue</Text>
               <Text style={styles.subtitle}>
                 Hi, Brett here. Consider this application my working introduction. I
-                rapid-prototyped it using a practical full-stack care-coordination workflow. Below,
-                you can explore entirely fictional follow-up work by status, urgency, and assigned
-                role.
+                rapid-prototyped and deployed it in a few days using Expo, React Native Web,
+                TypeScript, Node.js/Express, MongoDB Atlas, and Google Cloud Run. AI-assisted
+                development accelerated the process while I learned the stack hands-on and worked
+                through the product, architecture, testing, and deployment decisions. Below, you can
+                explore the care-coordination workflow by status, urgency, and assigned role.
               </Text>
             </View>
             <View style={[styles.headerPanel, isWide && styles.headerPanelWide]}>
               <Text style={styles.panelLabel}>Today</Text>
-              <Text style={styles.panelDate}>Aug 26, 2026</Text>
+              <Text style={styles.panelDate}>{currentDateLabel}</Text>
               <Text style={styles.panelNote}>{queueSourceLabel}</Text>
             </View>
           </View>
@@ -266,7 +282,7 @@ function QueueContent({
   if (state === 'loading') {
     return (
       <QueueStatePanel
-        message="The queue is waiting on synthetic follow-up records. This state is manually demonstrable for UI review."
+        message="The queue is waiting on follow-up records. This state is manually demonstrable for UI review."
         title="Loading work queue"
         type="loading"
       />
@@ -289,7 +305,7 @@ function QueueContent({
     return (
       <QueueStatePanel
         actionLabel="Retry queue"
-        message="No synthetic cases match the selected filters. Adjust the filters or retry the configured queue data source."
+        message="No cases match the selected filters. Adjust the filters or retry the configured queue data source."
         title="No follow-ups found"
         type="empty"
         onAction={onRetry}
@@ -336,6 +352,14 @@ function restoreFocus(element: FocusableElement | null) {
   window.setTimeout(() => {
     element.focus();
   }, 0);
+}
+
+function formatCurrentDate(value: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(value);
 }
 
 const styles = StyleSheet.create({

@@ -85,7 +85,7 @@ describe('fetchWorkQueueCases', () => {
     );
   });
 
-  it('requires explicit mock mode for local synthetic data', async () => {
+  it('requires explicit mock mode for local fictional data', async () => {
     vi.stubEnv('EXPO_PUBLIC_USE_MOCK_DATA', 'true');
 
     await expect(fetchWorkQueueCases({ status: 'overdue' })).resolves.toHaveLength(2);
